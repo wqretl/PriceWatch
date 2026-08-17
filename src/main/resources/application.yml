@@ -9,3 +9,7 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
+
+pricewatch:
+  scheduler:
+    fixed-delay: ${PRICE_CHECK_INTERVAL:60000}
