@@ -10,7 +10,11 @@ public class ProductMapper {
 
     public Product toEntity(ProductRequest request) {
         Product product = new Product();
-        updateEntity(request, product);
+        product.setName(request.name());
+        product.setProductUrl(request.productUrl());
+        product.setCurrentPrice(request.currentPrice());
+        product.setTargetPrice(request.targetPrice());
+        product.setActive(request.active() == null ? true : request.active());
         return product;
     }
 
@@ -32,6 +36,8 @@ public class ProductMapper {
         product.setProductUrl(request.productUrl());
         product.setCurrentPrice(request.currentPrice());
         product.setTargetPrice(request.targetPrice());
-        product.setActive(request.active() == null ? true : request.active());
+        if (request.active() != null) {
+            product.setActive(request.active());
+        }
     }
 }
