@@ -1,9 +1,11 @@
 package com.example.pricewatch.controller;
 
 import com.example.pricewatch.dto.ProductRequest;
+import com.example.pricewatch.dto.ProductPageResponse;
 import com.example.pricewatch.dto.ProductResponse;
 import com.example.pricewatch.service.ProductService;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -31,8 +34,16 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductResponse> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<ProductPageResponse> getProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort
+    ) {
+        return ResponseEntity.ok(productService.getProducts(name, active, minPrice, maxPrice, page, size, sort));
     }
 
     @GetMapping("/{id}")
