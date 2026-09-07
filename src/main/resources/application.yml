@@ -11,5 +11,7 @@ spring:
       ddl-auto: update
 
 pricewatch:
+  parser:
+    timeout-ms: ${PRICE_PARSER_TIMEOUT:10000}
   scheduler:
     fixed-delay: ${PRICE_CHECK_INTERVAL:60000}
