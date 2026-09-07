@@ -17,15 +17,19 @@ public class ProductPriceUpdateTransactionService {
     private final PriceHistoryService priceHistoryService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updatePrice(Long productId, BigDecimal newPrice) {
+    public PriceUpdateResult updatePrice(Long productId, BigDecimal newPrice) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
-        if (product.getCurrentPrice().compareTo(newPrice) == 0) {
-            return;
+        BigDecimal oldPrice = product.getCurrentPrice();
+        if (oldPrice.compareTo(newPrice) == 0) {
+            return new PriceUpdateResult(product, oldPrice, newPrice, false, false);
         }
 
         product.setCurrentPrice(newPrice);
         Product updatedProduct = productRepository.save(product);
         priceHistoryService.savePrice(updatedProduct, newPrice);
+        boolean targetReached = oldPrice.compareTo(updatedProduct.getTargetPrice()) > 0
+                && newPrice.compareTo(updatedProduct.getTargetPrice()) <= 0;
+        return new PriceUpdateResult(updatedProduct, oldPrice, newPrice, true, targetReached);
     }
 }
